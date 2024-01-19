@@ -1,4 +1,4 @@
-name: lapalma-earthquakes
+name: zircon-MELTS
 channels:
   - conda-forge
   - default
