@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="generator" content="quarto-1.4.545">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+    <title>1-Theory: Adding Zr to the MELTS liquid model</title>
+    <style>
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      div.columns{display: flex; gap: min(4vw, 1.5em);}
+      div.column{flex: auto; overflow-x: auto;}
+      div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+      ul.task-list{list-style: none;}
+      ul.task-list li input[type="checkbox"] {
+        width: 0.8em;
+        margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+        vertical-align: middle;
+      }
+      /* CSS for syntax highlighting */
+      pre > code.sourceCode { white-space: pre; position: relative; }
+      pre > code.sourceCode > span { line-height: 1.25; }
+      pre > code.sourceCode > span:empty { height: 1.2em; }
+      .sourceCode { overflow: visible; }
+      code.sourceCode > span { color: inherit; text-decoration: inherit; }
+      div.sourceCode { margin: 1em 0; }
+      pre.sourceCode { margin: 0; }
+      @media screen {
+      div.sourceCode { overflow: auto; }
+      }
+      @media print {
+      pre > code.sourceCode { white-space: pre-wrap; }
+      pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+      }
+      pre.numberSource code
+        { counter-reset: source-line 0; }
+      pre.numberSource code > span
+        { position: relative; left: -4em; counter-increment: source-line; }
+      pre.numberSource code > span > a:first-child::before
+        { content: counter(source-line);
+          position: relative; left: -1em; text-align: right; vertical-align: baseline;
+          border: none; display: inline-block;
+          -webkit-touch-callout: none; -webkit-user-select: none;
+          -khtml-user-select: none; -moz-user-select: none;
+          -ms-user-select: none; user-select: none;
+          padding: 0 4px; width: 4em;
+        }
+      pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+      div.sourceCode
+        {   }
+      @media screen {
+      pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+      }
+    </style>
+
+    <style>
+      body.hypothesis-enabled #quarto-embed-header {
+        padding-right: 36px;
+      }
+
+      #quarto-embed-header {
+        height: 3em;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: solid 1px;
+      }
+
+      #quarto-embed-header h6 {
+        font-size: 1.1em;
+        padding-top: 0.6em;
+        margin-left: 1em;
+        margin-right: 1em;
+        font-weight: 400;
+      }
+
+      #quarto-embed-header a.quarto-back-link,
+      #quarto-embed-header a.quarto-download-embed {
+        font-size: 0.8em;
+        margin-top: 1em;
+        margin-bottom: 1em;
+        margin-left: 1em;
+        margin-right: 1em;
+      }
+
+      .quarto-back-container {
+        padding-left: 0.5em;
+        display: flex;
+      }
+
+      .headroom {
+          will-change: transform;
+          transition: transform 200ms linear;
+      }
+
+      .headroom--pinned {
+          transform: translateY(0%);
+      }
+
+      .headroom--unpinned {
+          transform: translateY(-100%);
+      }      
+    </style>
+
+    <script>
+    window.document.addEventListener("DOMContentLoaded", function () {
+
+      var header = window.document.querySelector("#quarto-embed-header");
+      const titleBannerEl = window.document.querySelector("body > #title-block-header");
+      if (titleBannerEl) {
+        titleBannerEl.style.paddingTop = header.clientHeight + "px";
+      }
+      const contentEl = window.document.getElementById('quarto-content');
+      for (const child of contentEl.children) {
+        child.style.paddingTop = header.clientHeight + "px";
+        child.style.marginTop = "1em";
+      }
+
+      // Use the article root if the `back` call doesn't work. This isn't perfect
+      // but should typically work
+      window.quartoBackToArticle = () => {
+        var currentUrl = window.location.href;
+        window.history.back();
+        setTimeout(() => {
+            // if location was not changed in 100 ms, then there is no history back
+            if(currentUrl === window.location.href){              
+                // redirect to site root
+                window.location.href = "../index.html";
+            }
+        }, 100);
+      }
+
+      const headroom = new window.Headroom(header, {
+        tolerance: 5,
+        onPin: function () {
+        },
+        onUnpin: function () {
+        },
+      });
+      headroom.init();
+    });
+    </script>
+
+    
+<script src="../site_libs/manuscript-notebook/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+     <script async="" src="https://hypothes.is/embed.js"></script>
+<script>
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    document.body.classList.add('hypothesis-enabled');
+  });
+</script>   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script> 
+      </head>
+
+  <body class="quarto-notebook">
+    <div id="quarto-embed-header" class="headroom fixed-top bg-primary">
+      
+      <a onclick="window.quartoBackToArticle(); return false;" class="btn btn-primary quarto-back-link" href=""><i class="bi bi-caret-left"></i> Back to Article</a>
+      <h6><i class="bi bi-journal-code"></i> 1-Theory: Adding Zr to the MELTS liquid model</h6>
+
+            <a href="../notebooks/1-Model-description.ipynb" class="btn btn-primary quarto-download-embed" download="1-Model-description.ipynb">Download Notebook</a>
+          </div>
+
+     <header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">1-Theory: Adding Zr to the MELTS liquid model</h1>
+          </div>
+
+    
+    <div class="quarto-title-meta-container">
+      <div class="quarto-title-meta-column-start">
+        
+        <div class="quarto-title-meta">
+
+                
+          
+                
+              </div>
+      </div>
+      <div class="quarto-title-meta-column-end quarto-other-formats-target">
+      </div>
+    </div>
+
+
+
+    <div class="quarto-other-links-text-target">
+    </div>  </div>
+</header><div id="quarto-content" class="page-columns page-rows-contents page-layout-article toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#theory-adding-zr-to-the-melts-liquid-model" id="toc-theory-adding-zr-to-the-melts-liquid-model" class="nav-link active" data-scroll-target="#theory-adding-zr-to-the-melts-liquid-model">1-Theory: Adding Zr to the MELTS liquid model</a></li>
+  <li><a href="#regular-solution-model-in-c-components" id="toc-regular-solution-model-in-c-components" class="nav-link" data-scroll-target="#regular-solution-model-in-c-components">Regular solution model in <em>c</em>-components</a></li>
+  <li><a href="#add-water-to-this-formulation" id="toc-add-water-to-this-formulation" class="nav-link" data-scroll-target="#add-water-to-this-formulation">Add water to this formulation</a></li>
+  <li><a href="#now-add-co2-to-the-model-associated-solution" id="toc-now-add-co2-to-the-model-associated-solution" class="nav-link" data-scroll-target="#now-add-co2-to-the-model-associated-solution">Now add CO<sub>2</sub> to the model (associated solution)</a></li>
+  <li><a href="#addition-of-zr-to-the-model" id="toc-addition-of-zr-to-the-model" class="nav-link" data-scroll-target="#addition-of-zr-to-the-model">Addition of Zr to the model</a></li>
+  <li><a href="#zircon-saturation-and-model-simplication" id="toc-zircon-saturation-and-model-simplication" class="nav-link" data-scroll-target="#zircon-saturation-and-model-simplication">Zircon saturation and model simplication</a>
+  <ul class="collapse">
+  <li><a href="#now-we-make-some-assumptions-about-which-parameters-in-the-model-are-likely-to-be-important." id="toc-now-we-make-some-assumptions-about-which-parameters-in-the-model-are-likely-to-be-important." class="nav-link" data-scroll-target="#now-we-make-some-assumptions-about-which-parameters-in-the-model-are-likely-to-be-important.">Now, we make some assumptions about which parameters in the model are likely to be important.</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+</div>
+<main class="content quarto-banner-title-block" id="quarto-document-content">      
+
+       <div id="cell-0" class="cell markdown">
+<section id="theory-adding-zr-to-the-melts-liquid-model" class="level1">
+<h1>1-Theory: Adding Zr to the MELTS liquid model</h1>
+</section>
+</div>
+<div class="cell-container"><div class="cell-decorator"><pre>In [2]:</pre></div><div id="cell-1" class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>html</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="op">&lt;</span>style<span class="op">&gt;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  table {margin<span class="op">-</span>left: <span class="dv">0</span> <span class="op">!</span>important<span class="op">;</span>}</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="op">&lt;/</span>style<span class="op">&gt;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></div>
+<div id="cell-2" class="cell markdown">
+<section id="regular-solution-model-in-c-components" class="level2">
+<h2 class="anchored" data-anchor-id="regular-solution-model-in-c-components">Regular solution model in <em>c</em>-components</h2>
+<p><strong>Ghiorso MS, Carmichael ISE, Rivers ML, Sack RO (1983) The Gibbs free energy of mixing of natural silicate liquids; an expanded regular solution approximation for the calculation of magmatic intensive variables. Contributions to Mineralogy and Petrology 84, 107-145</strong><br>
+and<br>
+<strong>Ghiorso MS, Sack RO (1995) Chemical Mass Transfer in Magmatic Processes IV. A revised and internally consistent thermodynamic model for the interpolation and extrapolation of liquid-solid equilibria in magmatic systems at elevated temperatures and pressures. Contrib Mineral Petrology 119, 197-212</strong><br>
+and<br>
+<strong>Gualda, G.A.R., Ghiorso, M.S., Lemons, R.V., Carley, T.L. (2012) Rhyolite-MELTS: A modified calibration of MELTS optimized for silica-rich, fluid-bearing magmatic systems. Journal of Petrology, 53, 875-890</strong></p>
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 37%">
+<col style="width: 27%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Components:</th>
+<th style="text-align: left;">Species:</th>
+<th style="text-align: left;">Component:</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">SiO<sub>2</sub></td>
+<td style="text-align: left;">SiO<sub>2</sub></td>
+<td style="text-align: left;"><span class="math inline">\(n_1\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TiO<sub>2</sub></td>
+<td style="text-align: left;">TiO<sub>2</sub></td>
+<td style="text-align: left;"><span class="math inline">\(n_2\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Al<sub>2</sub>O<sub>3</sub></td>
+<td style="text-align: left;">Al<sub>2</sub>O<sub>3</sub></td>
+<td style="text-align: left;"><span class="math inline">\(n_3\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Fe<sub>2</sub>O<sub>3</sub></td>
+<td style="text-align: left;">Fe<sub>2</sub>O<sub>3</sub></td>
+<td style="text-align: left;"><span class="math inline">\(n_4\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">MgCr<sub>2</sub>O<sub>4</sub></td>
+<td style="text-align: left;">MgCr<sub>2</sub>O<sub>4</sub></td>
+<td style="text-align: left;"><span class="math inline">\(n_5\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Fe<sub>2</sub>SiO<sub>4</sub></td>
+<td style="text-align: left;">Fe<sub>2</sub>SiO<sub>4</sub></td>
+<td style="text-align: left;"><span class="math inline">\(n_6\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">MnSi<sub>1/2</sub>O<sub>2</sub></td>
+<td style="text-align: left;">MnSi<sub>1/2</sub>O<sub>2</sub></td>
+<td style="text-align: left;"><span class="math inline">\(n_7\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Mg<sub>2</sub>SiO<sub>4</sub></td>
+<td style="text-align: left;">Mg<sub>2</sub>SiO<sub>4</sub></td>
+<td style="text-align: left;"><span class="math inline">\(n_8\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">NiSi<sub>1/2</sub>O<sub>2</sub></td>
+<td style="text-align: left;">NiSi<sub>1/2</sub>O<sub>2</sub></td>
+<td style="text-align: left;"><span class="math inline">\(n_9\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CoSi<sub>1/2</sub>O<sub>2</sub></td>
+<td style="text-align: left;">CoSi<sub>1/2</sub>O<sub>2</sub></td>
+<td style="text-align: left;"><span class="math inline">\(n_{10}\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CaSiO<sub>3</sub></td>
+<td style="text-align: left;">CaSiO<sub>3</sub></td>
+<td style="text-align: left;"><span class="math inline">\(n_{11}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Na<sub>2</sub>SiO<sub>3</sub></td>
+<td style="text-align: left;">Na<sub>2</sub>SiO<sub>3</sub></td>
+<td style="text-align: left;"><span class="math inline">\(n_{12}\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">KAlSiO<sub>4</sub></td>
+<td style="text-align: left;">KAlSiO<sub>4</sub></td>
+<td style="text-align: left;"><span class="math inline">\(n_{13}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ca<sub>3</sub>(PO<sub>4</sub>)<sub>2</sub></td>
+<td style="text-align: left;">Ca<sub>3</sub>(PO<sub>4</sub>)<sub>2</sub></td>
+<td style="text-align: left;"><span class="math inline">\(n_{14}\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">H<sub>2</sub>O</td>
+<td style="text-align: left;">H<sub>2</sub>O</td>
+<td style="text-align: left;"><span class="math inline">\(n_{15}\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>The Gibbs free energy of a <em>c</em>-component multicomponent regular solution is given by (<span class="math inline">\(n_T = \sum_{i=1}^c n_i\)</span>):</p>
+<p><span class="math inline">\(G = \sum_{i=1}^c n_i \mu_i^o + R T \sum_{i=1}^c n_i \log \left( \frac{n_i}{n_T} \right) + \sum_{i=1}^c \sum_{j=i+1}^c W_{i,j} \frac{n_i n_j}{n_T}\)</span></p>
+<p>and the chemical potential (the derivative of the above expressio) is:</p>
+<p><span class="math inline">\(\mu_k = \mu_k^o + R T \log \left( \frac{n_k}{n_T} \right) + \sum_{i=1}^c W_{i,k} \frac{n_i}{n_T} - \sum_{i=1}^c \sum_{j=i+1}^c W_{i,j} \frac{n_i n_j}{n_T^2}\)</span></p>
+</section>
+</div>
+<div id="cell-3" class="cell markdown">
+<section id="add-water-to-this-formulation" class="level3">
+<h3 class="anchored" data-anchor-id="add-water-to-this-formulation">Add water to this formulation</h3>
+<p>The MELTS liquid model makes the assumption that H<sub>2</sub>O enters the melt completely dissociating to an OH species. That means that for every water molecule, two hydroxyl molecules are produced. The configurational entropy must account for this extra species, so we must modify the expression for the Gibbs Free Energy to acount for this.</p>
+<p>If <span class="math inline">\(n_w\)</span> is the number of moles of H<sub>2</sub>O in the liquid (<span class="math inline">\(n_w\)</span> is one of <em>c</em>-components):</p>
+<p><span class="math inline">\(G = \sum_{i=1}^c n_i \mu_i^o + R T \sum_{i=1}^c n_i \log \left( \frac{n_i}{n_T} \right) + n_w R T \log \left( \frac{n_w}{n_T} \right) + \left( n_T - n_w \right) R T \log \left( \frac{n_T - n_w}{n_T} \right) + \sum_{i=1}^c \sum_{j=i+1}^c W_{i,j} \frac{n_i n_j}{n_T}\)</span></p>
+<p>and the chemical potential (the derivative of the above expressio) is:</p>
+<p><span class="math inline">\(\mu_k = \mu_k^o + R T \log \left( \frac{n_k \left( n_T - n_w \right)}{n_T^2} \right) + \sum_{i=1}^c W_{i,k} \frac{n_i}{n_T} - \sum_{i=1}^c \sum_{j=i+1}^c W_{i,j} \frac{n_i n_j}{n_T^2}\)</span></p>
+<p><span class="math inline">\(\mu_w = \mu_w^o + R T \log \left( \frac{n_w}{n_T} \right)^2 + \sum_{i=1}^c W_{i,w} \frac{n_i}{n_T} - \sum_{i=1}^c \sum_{j=i+1}^c W_{i,j} \frac{n_i n_j}{n_T^2}\)</span></p>
+</section>
+</div>
+<div id="cell-4" class="cell markdown">
+<section id="now-add-co2-to-the-model-associated-solution" class="level2">
+<h2 class="anchored" data-anchor-id="now-add-co2-to-the-model-associated-solution">Now add CO<sub>2</sub> to the model (associated solution)</h2>
+<p><strong>Ghiorso, M.S., Gualda, G.A.R. (2015) An H2O-CO2 mixed fluid saturation model compatible with rhyolite-MELTS. Contributions to Mineralogy and Petrology, doi:10.1007/s00410-015-1141-8</strong></p>
+<p>To do this we need to make an associated solution, using both CO<sub>2</sub> as a new component and CaCO<sub>3</sub> as a new dependent species.</p>
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 23%">
+<col style="width: 17%">
+<col style="width: 19%">
+<col style="width: 21%">
+<col style="width: 17%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Components:</th>
+<th style="text-align: left;">Species:</th>
+<th style="text-align: left;">Reaction:</th>
+<th style="text-align: left;">Component:</th>
+<th style="text-align: left;">Species:</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">SiO<sub>2</sub></td>
+<td style="text-align: left;">SiO<sub>2</sub></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(n_1\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(y_1\)</span> = <span class="math inline">\(n_1\)</span> + <span class="math inline">\(y_{17}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TiO<sub>2</sub></td>
+<td style="text-align: left;">TiO<sub>2</sub></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(n_2\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(y_2\)</span> = <span class="math inline">\(n_2\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Al<sub>2</sub>O<sub>3</sub></td>
+<td style="text-align: left;">Al<sub>2</sub>O<sub>3</sub></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(n_3\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(y_3\)</span> = <span class="math inline">\(n_3\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Fe<sub>2</sub>O<sub>3</sub></td>
+<td style="text-align: left;">Fe<sub>2</sub>O<sub>3</sub></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(n_4\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(y_4\)</span> = <span class="math inline">\(n_4\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">MgCr<sub>2</sub>O<sub>4</sub></td>
+<td style="text-align: left;">MgCr<sub>2</sub>O<sub>4</sub></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(n_5\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(y_5\)</span> = <span class="math inline">\(n_5\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Fe<sub>2</sub>SiO<sub>4</sub></td>
+<td style="text-align: left;">Fe<sub>2</sub>SiO<sub>4</sub></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(n_6\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(y_6\)</span> = <span class="math inline">\(n_6\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">MnSi<sub>1/2</sub>O<sub>2</sub></td>
+<td style="text-align: left;">MnSi<sub>1/2</sub>O<sub>2</sub></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(n_7\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(y_7\)</span> = <span class="math inline">\(n_7\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Mg<sub>2</sub>SiO<sub>4</sub></td>
+<td style="text-align: left;">Mg<sub>2</sub>SiO<sub>4</sub></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(n_8\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(y_8\)</span> = <span class="math inline">\(n_8\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">NiSi<sub>1/2</sub>O<sub>2</sub></td>
+<td style="text-align: left;">NiSi<sub>1/2</sub>O<sub>2</sub></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(n_9\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(y_9\)</span> = <span class="math inline">\(n_9\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CoSi<sub>1/2</sub>O<sub>2</sub></td>
+<td style="text-align: left;">CoSi<sub>1/2</sub>O<sub>2</sub></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(n_{10}\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(y_{10}\)</span> = <span class="math inline">\(n_{10}\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CaSiO<sub>3</sub></td>
+<td style="text-align: left;">CaSiO<sub>3</sub></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(n_{11}\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(y_{11}\)</span> = <span class="math inline">\(n_{11}\)</span> - <span class="math inline">\(y_{17}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Na<sub>2</sub>SiO<sub>3</sub></td>
+<td style="text-align: left;">Na<sub>2</sub>SiO<sub>3</sub></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(n_{12}\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(y_{12}\)</span> = <span class="math inline">\(n_{12}\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">KAlSiO<sub>4</sub></td>
+<td style="text-align: left;">KAlSiO<sub>4</sub></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(n_{13}\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(y_{13}\)</span> = <span class="math inline">\(n_{13}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ca<sub>3</sub>(PO<sub>4</sub>)<sub>2</sub></td>
+<td style="text-align: left;">Ca<sub>3</sub>(PO<sub>4</sub>)<sub>2</sub></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(n_{14}\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(y_{14}\)</span> = <span class="math inline">\(n_{14}\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">H<sub>2</sub>O</td>
+<td style="text-align: left;">H<sub>2</sub>O</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(n_{15}\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(y_{15}\)</span> = <span class="math inline">\(n_{15}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CO<sub>2</sub></td>
+<td style="text-align: left;">CO<sub>2</sub></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(n_{16}\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(y_{16}\)</span> = <span class="math inline">\(n_{16}\)</span> - <span class="math inline">\(y_{17}\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">CaCO<sub>3</sub></td>
+<td style="text-align: left;">CO<sub>2</sub> + CaSiO<sub>3</sub> = CaCO<sub>3</sub> + SiO<sub>2</sub></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(y_{17}\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>Note that <span class="math inline">\(n_T = \sum_{i=1}^c n_i = y_T = \sum_{i=1}^s y_i\)</span></p>
+<p><span class="math inline">\(G = \sum_{i=1}^{s} y_i \mu_i^o + R T \sum_{i=1}^{s} y_i \log \left( \frac{y_i}{y_T} \right) + y_w R T \log \left( \frac{y_w}{y_T} \right) + \left( y_T - y_w \right) R T \log \left( \frac{y_T - y_w}{y_T} \right) + \sum_{i=1}^{s} \sum_{j=i+1}^{s} W_{i,j} \frac{y_i y_j}{y_T}\)</span></p>
+<p>and the chemical potential (the derivative of the above expressio) is:</p>
+<p><span class="math inline">\(\mu_k = \mu_k^o + R T \log \left( \frac{y_k \left( y_T - y_w \right)}{y_T^2} \right) + \sum_{i=1}^s W_{i,k} \frac{y_i}{y_T} - \sum_{i=1}^s \sum_{j=i+1}^s W_{i,j} \frac{y_i y_j}{y_T^2}\)</span></p>
+<p><span class="math inline">\(\mu_w = \mu_w^o + R T \log \left( \frac{y_w}{y_T} \right)^2 + \sum_{i=1}^s W_{i,w} \frac{y_i}{y_T} - \sum_{i=1}^s \sum_{j=i+1}^s W_{i,j} \frac{y_i y_j}{y_T^2}\)</span></p>
+<p><span class="math inline">\(\mu_{CO_2} = \mu_{CO_2}^o + R T \log \left( \frac{y_{CO_2} \left( y_T - y_w \right)}{y_T^2} \right) + \sum_{i=1}^s W_{i,{CO_2}} \frac{y_i}{y_T} - \sum_{i=1}^s \sum_{j=i+1}^s W_{i,j} \frac{y_i y_j}{y_T^2}\)</span></p>
+<p>The species mole numbers, <span class="math inline">\(y_i\)</span>, must be computed from the component moles, <span class="math inline">\(n_i\)</span>, in conjunction with a condition for homogeneous equilibrium between CO<sub>2</sub> and CaCO<sub>3</sub>.</p>
+</section>
+</div>
+<div id="cell-5" class="cell markdown">
+<section id="addition-of-zr-to-the-model" class="level2">
+<h2 class="anchored" data-anchor-id="addition-of-zr-to-the-model">Addition of Zr to the model</h2>
+<p>We posit an associated solution formulation with two alaki-zirconate species (after <strong>Watson EB, 1979, Zircon Saturation in Felsic Liquids: Experimental Results and Applications to Trace Element Geochemistry. Contributions to Mineralogy and Petrology, 70, 407-419</strong>):</p>
+<ul>
+<li>Na<sub>4</sub>ZrSi<sub>2</sub>O<sub>8</sub><br>
+</li>
+<li>K<sub>4</sub>ZrSi<sub>2</sub>O<sub>8</sub></li>
+</ul>
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 22%">
+<col style="width: 16%">
+<col style="width: 18%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Components:</th>
+<th style="text-align: left;">Species:</th>
+<th style="text-align: left;">Reaction:</th>
+<th style="text-align: left;">Component:</th>
+<th style="text-align: left;">Species X:</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">SiO<sub>2</sub></td>
+<td style="text-align: left;">SiO<sub>2</sub></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(n_1\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(y_1\)</span> = <span class="math inline">\(n_1\)</span> + <span class="math inline">\(y_{18}\)</span> + <span class="math inline">\(y_{19}\)</span> + 3 <span class="math inline">\(y_{20}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TiO<sub>2</sub></td>
+<td style="text-align: left;">TiO<sub>2</sub></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(n_2\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(y_2\)</span> = <span class="math inline">\(n_2\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Al<sub>2</sub>O<sub>3</sub></td>
+<td style="text-align: left;">Al<sub>2</sub>O<sub>3</sub></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(n_3\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(y_3\)</span> = <span class="math inline">\(n_3\)</span> + 2 <span class="math inline">\(y_{20}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Fe<sub>2</sub>O<sub>3</sub></td>
+<td style="text-align: left;">Fe<sub>2</sub>O<sub>3</sub></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(n_4\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(y_4\)</span> = <span class="math inline">\(n_4\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">MgCr<sub>2</sub>O<sub>4</sub></td>
+<td style="text-align: left;">MgCr<sub>2</sub>O<sub>4</sub></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(n_5\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(y_5\)</span> = <span class="math inline">\(n_5\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Fe<sub>2</sub>SiO<sub>4</sub></td>
+<td style="text-align: left;">Fe<sub>2</sub>SiO<sub>4</sub></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(n_6\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(y_6\)</span> = <span class="math inline">\(n_6\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">MnSi<sub>1/2</sub>O<sub>2</sub></td>
+<td style="text-align: left;">MnSi<sub>1/2</sub>O<sub>2</sub></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(n_7\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(y_7\)</span> = <span class="math inline">\(n_7\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Mg<sub>2</sub>SiO<sub>4</sub></td>
+<td style="text-align: left;">Mg<sub>2</sub>SiO<sub>4</sub></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(n_8\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(y_8\)</span> = <span class="math inline">\(n_8\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">NiSi<sub>1/2</sub>O<sub>2</sub></td>
+<td style="text-align: left;">NiSi<sub>1/2</sub>O<sub>2</sub></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(n_9\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(y_9\)</span> = <span class="math inline">\(n_9\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CoSi<sub>1/2</sub>O<sub>2</sub></td>
+<td style="text-align: left;">CoSi<sub>1/2</sub>O<sub>2</sub></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(n_{10}\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(y_{10}\)</span> = <span class="math inline">\(n_{10}\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CaSiO<sub>3</sub></td>
+<td style="text-align: left;">CaSiO<sub>3</sub></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(n_{11}\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(y_{11}\)</span> = <span class="math inline">\(n_{11}\)</span> - <span class="math inline">\(y_{18}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Na<sub>2</sub>SiO<sub>3</sub></td>
+<td style="text-align: left;">Na<sub>2</sub>SiO<sub>3</sub></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(n_{12}\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(y_{12}\)</span> = <span class="math inline">\(n_{12}\)</span> - 2 <span class="math inline">\(y_{19}\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">KAlSiO<sub>4</sub></td>
+<td style="text-align: left;">KAlSiO<sub>4</sub></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(n_{13}\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(y_{13}\)</span> = <span class="math inline">\(n_{13}\)</span> - 4 <span class="math inline">\(y_{20}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ca<sub>3</sub>(PO<sub>4</sub>)<sub>2</sub></td>
+<td style="text-align: left;">Ca<sub>3</sub>(PO<sub>4</sub>)<sub>2</sub></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(n_{14}\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(y_{14}\)</span> = <span class="math inline">\(n_{14}\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">H<sub>2</sub>O</td>
+<td style="text-align: left;">H<sub>2</sub>O</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(n_{15}\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(y_{15}\)</span> = <span class="math inline">\(n_{15}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CO<sub>2</sub></td>
+<td style="text-align: left;">CO<sub>2</sub></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(n_{16}\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(y_{16}\)</span> = <span class="math inline">\(n_{16}\)</span> - <span class="math inline">\(y_{18}\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ZrSiO<sub>4</sub></td>
+<td style="text-align: left;">ZrSiO<sub>4</sub></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(n_{17}\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(y_{17}\)</span> = <span class="math inline">\(n_{17}\)</span> - <span class="math inline">\(y_{19}\)</span> - <span class="math inline">\(y_{20}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">CaCO<sub>3</sub></td>
+<td style="text-align: left;">CO<sub>2</sub> + CaSiO<sub>3</sub> = CaCO<sub>3</sub> + SiO<sub>2</sub></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(y_{18}\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Na<sub>4</sub>ZrSi<sub>2</sub>O<sub>8</sub></td>
+<td style="text-align: left;">ZrSiO<sub>4</sub> + 2Na<sub>2</sub>SiO<sub>3</sub> = Na<sub>4</sub>ZrSi<sub>2</sub>O<sub>8</sub> + SiO<sub>2</sub></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(y_{19}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">K<sub>4</sub>ZrSi<sub>2</sub>O<sub>8</sub></td>
+<td style="text-align: left;">ZrSiO<sub>4</sub> + 4KAlSiO<sub>4</sub> = K<sub>4</sub>ZrSi<sub>2</sub>O<sub>8</sub> + 2Al<sub>2</sub>O<sub>3</sub> + 3SiO<sub>2</sub></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(y_{20}\)</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+</div>
+<div id="cell-6" class="cell markdown">
+<p>The Gibbs Free Energy is formulated as before by the expression</p>
+<p><span class="math inline">\(G = \sum_{i=1}^{s} y_i \mu_i^o + R T \sum_{i=1}^{s} y_i \log \left( \frac{y_i}{y_T} \right) + y_w R T \log \left( \frac{y_w}{y_T} \right) + \left( y_T - y_w \right) R T \log \left( \frac{y_T - y_w}{y_T} \right) + \sum_{i=1}^{s} \sum_{j=i+1}^{s} W_{i,j} \frac{y_i y_j}{y_T}\)</span></p>
+<p>and the new chemical potential is given by</p>
+<p><span class="math inline">\(\mu_{ZrSiO_4} = \mu_{ZrSiO_4}^o + R T \log \left( \frac{y_{ZrSiO_4} \left( y_T - y_w \right)}{y_T^2} \right) + \sum_{i=1}^s W_{i,{ZrSiO_4}} \frac{y_i}{y_T} - \sum_{i=1}^s \sum_{j=i+1}^s W_{i,j} \frac{y_i y_j}{y_T^2}\)</span></p>
+</div>
+<div id="cell-7" class="cell markdown">
+<section id="zircon-saturation-and-model-simplication" class="level2">
+<h2 class="anchored" data-anchor-id="zircon-saturation-and-model-simplication">Zircon saturation and model simplication</h2>
+<p>The expression for the chemical potential of ZrSiO<sub>4</sub> can be rearranged to</p>
+<p><span class="math inline">\(\mu_{ZrSiO_4} = \mu_{ZrSiO_4}^o + R T \log \left[ \frac{\left(n_{ZrSiO_4} - y_{Na_4ZrSi_2O_8} - y_{K_4ZrSi_2O_8} \right) \left( y_T - y_w \right)}{y_T^2} \right] + \sum_{i=1}^s W_{i,{ZrSiO_4}} \frac{y_i}{y_T} - \sum_{i=1}^s \sum_{j=i+1}^s W_{i,j} \frac{y_i y_j}{y_T^2}\)</span></p>
+<p>This expression shows that stablizing the alkali-zirconate species decreases the effective concentration of ZrSiO<sub>4</sub> and makes the logaithm term in the chemical potential more negative. Given that zircon saturation requires:</p>
+<p><span class="math inline">\(\mu_{ZrSiO_4}^{o,zircon} = \mu_{ZrSiO_4}^{liquid}\)</span></p>
+<p>the effect of alakli concentration on the ZrSiO<sub>4</sub> liquid chemical potential is dominated by the logarithmic term <em>if Zr is at low-concentration in the liquid</em>.</p>
+<p>Note also that because the alkali-zirconate species concentrations are determined by these two homogeneous equilibrium reactions:</p>
+<ul>
+<li><p>ZrSiO<sub>4</sub> + 2Na<sub>2</sub>SiO<sub>3</sub> = Na<sub>4</sub>ZrSi<sub>2</sub>O<sub>8</sub> + SiO<sub>2</sub></p></li>
+<li><p>ZrSiO<sub>4</sub> + 4KAlSiO<sub>4</sub> = K<sub>4</sub>ZrSi<sub>2</sub>O<sub>8</sub> + 2Al<sub>2</sub>O<sub>3</sub> + 3SiO<sub>2</sub></p></li>
+</ul>
+<p>when the activity of silica in the melt is low, as is the case for alkali-rhyolites, trachytes, phonolites, etc., both reactions will be driven to the right, which will increase concentrations of the alkali-zirconate species, and <em>lower</em> the effective concentration of ZrSiO<sub>4</sub>. The effect of this will be to make <span class="math inline">\(\mu_{ZrSiO_4}^{liquid}\)</span> more negative. Consequently, alali-rich melts will require more Zr to saturate with zircon!</p>
+<section id="now-we-make-some-assumptions-about-which-parameters-in-the-model-are-likely-to-be-important." class="level3">
+<h3 class="anchored" data-anchor-id="now-we-make-some-assumptions-about-which-parameters-in-the-model-are-likely-to-be-important.">Now, we make some assumptions about which parameters in the model are likely to be important.</h3>
+<ul>
+<li>We will assume that all standard state and regular solution interaction parameters calibrated previously are applicable to this model.</li>
+<li>There are 19 species interaction parameters like <span class="math inline">\(W_{ZrSiO_4, i}\)</span>, another 19 like <span class="math inline">\(W_{Na_4ZrSi_2O_8, i}\)</span>, and another 19 like <span class="math inline">\(W_{K_4ZrSi_2O_8, i}\)</span>. It is unlikely that we will have enough calibration data of sufficient compositional variability to constrain all but a few of them. We will assume that the speciation mole fractions in the logarithmic term will be sufficient for calibrating our experimental dataset and set all 57 W-terms to zero.</li>
+<li>We will assume that <span class="math inline">\(\mu_{ZrSiO_4}^{o} = H_{ZrSiO_4} - T S_{ZrSiO_4} + \left( P - 1 \right) V_{ZrSiO_4}\)</span>, where <span class="math inline">\(H_{ZrSiO_4}\)</span>, <span class="math inline">\(S_{ZrSiO_4}\)</span>, and <span class="math inline">\(V_{ZrSiO_4}\)</span> are model parameters.</li>
+<li>We will assume that <span class="math inline">\(\mu_{Na_4ZrSi_2O_8}^{o} = H_{Na_4ZrSi_2O_8} - T S_{Na_4ZrSi_2O_8} + \left( P - 1 \right) V_{Na_4ZrSi_2O_8}\)</span>, where <span class="math inline">\(H_{Na_4ZrSi_2O_8}\)</span>, <span class="math inline">\(S_{Na_4ZrSi_2O_8}\)</span>, and <span class="math inline">\(V_{Na_4ZrSi_2O_8}\)</span> are model parameters.</li>
+<li>We will assume that <span class="math inline">\(\mu_{K_4ZrSi_2O_8}^{o} = H_{K_4ZrSi_2O_8} - T S_{K_4ZrSi_2O_8} + \left( P - 1 \right) V_{K_4ZrSi_2O_8}\)</span>, where <span class="math inline">\(H_{K_4ZrSi_2O_8}\)</span>, <span class="math inline">\(S_{K_4ZrSi_2O_8}\)</span>, and <span class="math inline">\(V_{K_4ZrSi_2O_8}\)</span> are model parameters.</li>
+</ul>
+<p>With these assumptions we have a model that requires values of the following nine parameters to be estimated and refined: - <span class="math inline">\(H_{ZrSiO_4}\)</span>, <span class="math inline">\(S_{ZrSiO_4}\)</span>, and <span class="math inline">\(V_{ZrSiO_4}\)</span> - <span class="math inline">\(H_{Na_4ZrSi_2O_8}\)</span>, <span class="math inline">\(S_{Na_4ZrSi_2O_8}\)</span>, and <span class="math inline">\(V_{Na_4ZrSi_2O_8}\)</span> - <span class="math inline">\(H_{K_4ZrSi_2O_8}\)</span>, <span class="math inline">\(S_{K_4ZrSi_2O_8}\)</span>, and <span class="math inline">\(V_{K_4ZrSi_2O_8}\)</span></p>
+<p><span class="math inline">\(H_{ZrSiO_4}\)</span>, <span class="math inline">\(S_{ZrSiO_4}\)</span>, and <span class="math inline">\(V_{ZrSiO_4}\)</span> will be estimated from the properties of zircon and a guess as to the entropy of fusion of zircon.</p>
+<p><span class="math inline">\(H_{Na_4ZrSi_2O_8}\)</span>, <span class="math inline">\(S_{Na_4ZrSi_2O_8}\)</span>, and <span class="math inline">\(V_{Na_4ZrSi_2O_8}\)</span> will be estimated by assumming that the <em>standard state Gibbs Free Energy</em> change of the reaction ZrSiO<sub>4</sub> + 2Na<sub>2</sub>SiO<sub>3</sub> = Na<sub>4</sub>ZrSi<sub>2</sub>O<sub>8</sub> + SiO<sub>2</sub> is zero at some average experimental temperature.</p>
+<p><span class="math inline">\(H_{K_4ZrSi_2O_8}\)</span>, <span class="math inline">\(S_{K_4ZrSi_2O_8}\)</span>, and <span class="math inline">\(V_{K_4ZrSi_2O_8}\)</span> will be estimated by assumming that the <em>standard state Gibbs Free Energy</em> change of the reaction ZrSiO<sub>4</sub> + 4KAlSiO<sub>4</sub> = K<sub>4</sub>ZrSi<sub>2</sub>O<sub>8</sub> + 2Al<sub>2</sub>O<sub>3</sub> + 3SiO<sub>2</sub> is zero at some average experimental temperature.</p>
+</section>
+</section>
+</div>
+<div id="cell-8" class="cell markdown">
+<p><strong>Now let’s build code for the model and calibrate the parameters from experimental data</strong></p>
+</div>
+     </main>
+<!-- /main column -->  <script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>  </div> <!-- /content --> 
+  
+</body></html>
