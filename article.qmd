@@ -111,9 +111,7 @@ represent conditions of homogeneous equilibrium, permitting concentrations of me
 Using the notation summarized in @tbl-1, the Gibbs Free Energy of solution may be written:  
 
 $$
-G = \sum_{i=1}^{s} y_i \mu_i^o + R T \sum_{i=1}^{s} y_i \log \left( \frac{y_i}{y_T} \right) + y_w R T \log \left( \frac{y_w}{y_T} \right) + \left( y_T - y_w \right) R T \log \left( \frac{y_T - y_w}{y_T} \right) 
-\\
-+ \sum_{i=1}^{s} \sum_{j=i+1}^{s} W_{i,j} \frac{y_i y_j}{y_T}
+G = \sum_{i=1}^{s} y_i \mu_i^o + R T \sum_{i=1}^{s} y_i \log \left( \frac{y_i}{y_T} \right) + y_w R T \log \left( \frac{y_w}{y_T} \right) + \left( y_T - y_w \right) R T \log \left( \frac{y_T - y_w}{y_T} \right) + \sum_{i=1}^{s} \sum_{j=i+1}^{s} W_{i,j} \frac{y_i y_j}{y_T}
 $$ {#eq-1}
 
 where $n_i$ denotes moles of the $i^{th}$ component and $y_i$ moles of the $i^{th}$ species.  $n_T$ is defined as $\sum_{i=1}^{17} n_i$ and $y_T$ as $\sum_{i=1}^{20} y_i = n_T - y_{19} + y_{20}$. $\mu_i^o$ denotes the chemical potential of the $i^{th}$ species in the standard state, here taken to be the pure substance at any T and P.  $R$ is the universal gas constant, and $W_{i,j}$ refers to temperatrure and pressure independent regular-solution energetic paramters. The number of moles of H<sub>2</sub>O (either $n_w$ or $y_w$) is treated specially in @eq-1 to account for its dissolution in the melt as two hydroxyl species [derivation in @ghiorso1983gibbs]. 
@@ -127,9 +125,7 @@ $$ {#eq-2}
 Evaluation of @eq-2 requires (1) a functional form and parameterization of $\mu_{ZrSiO_4}^o \left( T,P \right)$, (2) estimated values for $W_{i,j}$, and (3) solution of the three conditions of homogeneous equilibrium,
 
 $$
-\left( \frac{\partial G}{\partial y_{CaCO_3}} \right)_{n_i} = \\
-\left( \frac{\partial G}{\partial y_{Na_4ZrSi_2O_8}} \right)_{n_i} = \\
-\left( \frac{\partial G}{\partial y_{K_4ZrSi_2O_8}} \right)_{n_i} = 0
+\left( \frac{\partial G}{\partial y_{CaCO_3}} \right)_{n_i} = \left( \frac{\partial G}{\partial y_{Na_4ZrSi_2O_8}} \right)_{n_i} = \left( \frac{\partial G}{\partial y_{K_4ZrSi_2O_8}} \right)_{n_i} = 0
 $$ {#eq-3}
 
 to determine equilibrium concentrations of species mole numbers ($y_{CaCO_3}, y_{Na_4ZrSi_2O_8}, y_{K_4ZrSi_2O_8}$) for a given bulk composition ($n_i$).
@@ -175,8 +171,7 @@ ZrSiO<sub>4</sub> + 2Na<sub>2</sub>SiO<sub>3</sub> = Na<sub>4</sub>ZrSi<sub>2</s
 Similarly, $\mu_{K_4ZrSi_2O_8}^{o}$ can be parameterized as 
 
 $$
-\mu_{K_4ZrSi_2O_8}^{o} = \Delta H_{K_4ZrSi_2O_8} - T \Delta S_{K_4ZrSi_2O_8} + \left( P - 1 \right) \Delta V_{K_4ZrSi_2O_8} \\
-+ \mu_{ZrSiO_4}^{o} + 4 \mu_{KAlSiO_4}^{o} - 2 \mu_{Al_2O_3}^{o} - 3 \mu_{SiO_2}^{o}
+\mu_{K_4ZrSi_2O_8}^{o} = \Delta H_{K_4ZrSi_2O_8} - T \Delta S_{K_4ZrSi_2O_8} + \left( P - 1 \right) \Delta V_{K_4ZrSi_2O_8} + \mu_{ZrSiO_4}^{o} + 4 \mu_{KAlSiO_4}^{o} - 2 \mu_{Al_2O_3}^{o} - 3 \mu_{SiO_2}^{o}
 $$ {#eq-7}
 
 where $\Delta H_{K_4ZrSi_2O_8}$, $\Delta S_{K_4ZrSi_2O_8}$, and $\Delta V_{K_4ZrSi_2O_8}$ are model parameters that account for the non-coplanarity of the standard state free energy of the reciporcal reaction:  
@@ -305,15 +300,13 @@ $$ {#eq-9}
 The standard state entropy change contribution to @eq-9 is zero under the model calibration asumptions made previously, so, this expression reduces to:
 
 $$
-\Delta S \approx - x R \log X_{Na_4ZrSi_2O_8} - \left( 1-x \right) R \log X_{ZrSiO_4} - x R \log X_{SiO_2} + 2 x R \log X_{Na_2SiO_3} \\
-\approx - R \log \left( \frac{X_{Na_4ZrSi_2O_8}^x X_{ZrSiO_4}^{1-x} X_{SiO_2}^x}{X_{Na_2SiO_3}^{2x}} \right) = - R \log \left( X_{Na_4ZrSi_2O_8}^x X_{ZrSiO_4}^{1-x} \right) - R x \log \left( \frac{X_{SiO_2}}{X_{Na_2SiO_3}^{2}} \right)
+\Delta S \approx - x R \log X_{Na_4ZrSi_2O_8} - \left( 1-x \right) R \log X_{ZrSiO_4} - x R \log X_{SiO_2} + 2 x R \log X_{Na_2SiO_3} \approx - R \log \left( \frac{X_{Na_4ZrSi_2O_8}^x X_{ZrSiO_4}^{1-x} X_{SiO_2}^x}{X_{Na_2SiO_3}^{2x}} \right) = - R \log \left( X_{Na_4ZrSi_2O_8}^x X_{ZrSiO_4}^{1-x} \right) - R x \log \left( \frac{X_{SiO_2}}{X_{Na_2SiO_3}^{2}} \right)
 $$ {#eq-10}
 
 if we consider non-ideal contributions to the Gibbs Free Energy to be second order. If $z$ is the total mole fraction of all zirconate species, then $X_{Na_4ZrSi_2O_8}$ is approximately $z x$ and $X_{ZrSiO_4}$ is approcimately $z \left( 1-x \right)$, and @eq-10 becomes
 
 $$
-\Delta S \approx - R \log \left[ z^x x^x z^{1-x} \left( 1 - x \right) ^{1-x} \right] - R x \log \left( \frac{X_{SiO_2}}{X_{Na_2SiO_3}^{2}} \right) \\
-= -R \log z - R \left[ x^x \left( 1 - x \right) ^{1-x} \right] - R x \log \left( \frac{X_{SiO_2}}{X_{Na_2SiO_3}^{2}} \right)
+\Delta S \approx - R \log \left[ z^x x^x z^{1-x} \left( 1 - x \right) ^{1-x} \right] - R x \log \left( \frac{X_{SiO_2}}{X_{Na_2SiO_3}^{2}} \right) = -R \log z - R \left[ x^x \left( 1 - x \right) ^{1-x} \right] - R x \log \left( \frac{X_{SiO_2}}{X_{Na_2SiO_3}^{2}} \right)
 $$ {#eq-11}
 
 The last logaithmic term in @eq-11 is a linear function of the fraction of Na-zirconate species ($x$) and for the trachyte bulk composition is approximately $- 41 x$ J. The first term has a value of approximately 40 J, but decreases as Zr concentration in the melt increases. The central term has a positive maximum at $x = \frac{1}{2}$ of ~ 6 J and falls parabolically to zero at lower or higher Na-zirconate mole fractions.

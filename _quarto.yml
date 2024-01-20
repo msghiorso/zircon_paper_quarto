@@ -7,7 +7,7 @@ manuscript:
     - data/Boehnke_et_al.csv
     - data/CO2_rMELTS_ZR_calib.c
     - data/CO2_rMELTS_ZR_calib.h
-    - data/Gervasoni_2016.csv
+    - data/Gervasoni_2016.xlsx
     - data/H2O_rMELTS_ZR_calib.c
     - data/H2O_rMELTS_ZR_calib.h
     - data/support_scripts.py
