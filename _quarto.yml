@@ -13,7 +13,14 @@ manuscript:
     - data/support_scripts.py
     - data/Watson_and_Harrison.csv
   # code-links: [repo, devcontainer, binder]
-
+  notebooks:
+    - notebooks/1-Model-description.ipynb
+    - notebooks/2-Endmembers-MELTS.ipynb
+    - notebooks/3-Liquid-MELTS-codegen.ipynb
+    - notebooks/4-Liquid-MELTS-API-tests.ipynb
+    - notebooks/5-Liquid-MELTS-calib-1.ipynb
+    - notebooks/6-Liquid-MELTS-calib-2.ipynb
+    - notebooks/7-MELTS-with-Zr.ipynb
 
 format:
   html:
